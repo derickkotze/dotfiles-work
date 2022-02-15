@@ -1,0 +1,435 @@
+#!/usr/bin/env bash
+
+# ==============================================
+# ~/.macos
+# macOS Monterey (12.2.x)
+# ==============================================
+# System Preferences
+#    1. Set hostname
+#    2. Disable IPv6
+#    3. Date & Time
+#    4. Set energy preferences
+#    5. Application Layer Firewall
+#    6. Login window
+#    7. FileVault
+# User Preferences
+# ==============================================
+
+# Check hostname argument
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 enter_hostname >" >&2
+  exit 1
+fi
+
+# Close any open System Preferences panes
+osascript -e 'tell application "System Preferences" to quit'
+
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep-alive: update existing `sudo` time stamp until this script has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+IS_LAPTOP=`sudo /usr/sbin/system_profiler SPHardwareDataType | grep "Model Identifier" | grep "Book"`
+
+# ==============================================
+# Start: System Preferences
+# ==============================================
+
+# ==============================================
+# System Preferences: Set hostname
+# ==============================================
+
+sudo scutil --set ComputerName $1
+sudo scutil --set HostName $1
+sudo scutil --set LocalHostName $1
+# sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string $1
+
+# ==============================================
+# System Preferences: Disable IPv6
+# ==============================================
+
+sudo networksetup -listallnetworkservices | while read i; do SUPPORT=$(sudo networksetup -getinfo "$i" | sudo grep "IPv6: Automatic") && if [ -n "$SUPPORT" ]; then sudo networksetup -setv6off "$i"; fi; done;
+
+# ==============================================
+# System Preferences: Date & Time
+# ==============================================
+
+sudo /usr/sbin/systemsetup -settimezone "Africa/Johannesburg"
+sudo /usr/sbin/systemsetup -setnetworktimeserver "time.euro.apple.com"
+sudo /usr/sbin/systemsetup -setusingnetworktime on
+
+# ==============================================
+# System Preferences: Set energy preferences
+# ==============================================
+
+if [[ "$IS_LAPTOP" != "" ]]; then
+    sudo pmset -b sleep 15 disksleep 10 displaysleep 5 halfdim 1
+    sudo pmset -c sleep 0 disksleep 0 displaysleep 30 halfdim 1
+else
+    sudo pmset sleep 0 disksleep 0 displaysleep 30 halfdim 1
+fi
+
+# ==============================================
+# System Preferences: Application Layer Firewall
+# ==============================================
+
+# Enable ALF
+sudo defaults write /Library/Preferences/com.apple.alf globalstate -int 1
+
+# Allow downloaded signed apps
+sudo defaults write /Library/Preferences/com.apple.alf allowdownloadsignedenabled -bool true
+
+# Allow signed apps
+sudo defaults write /Library/Preferences/com.apple.alf allowsignedenabled -bool true
+
+# Enable logging
+sudo defaults write /Library/Preferences/com.apple.alf loggingenabled -bool true
+
+# Disable stealth mode
+sudo defaults write /Library/Preferences/com.apple.alf stealthenabled -bool false
+
+# ==============================================
+# System Preferences: Login window
+# ==============================================
+
+# Show shut down etc. buttons
+sudo defaults write /Library/Preferences/com.apple.loginwindow PowerOffDisabled -bool false
+
+# Don't show any password hints
+sudo defaults write /Library/Preferences/com.apple.loginwindow RetriesUntilHint -int 0
+
+# Hide users with UID under 500
+sudo defaults write /Library/Preferences/com.apple.loginwindow Hide500Users -bool YES
+
+# ==============================================
+# System Preferences: FileVault
+# ==============================================
+
+# Destroy File Vault Key when going to standby mode
+# User will be prompted for password when coming out of standby mode
+sudo pmset -a destroyfvkeyonstandby 1
+
+# ==============================================
+# End: System Preferences
+# ==============================================
+
+# ==============================================
+# Start: User Preferences
+# ==============================================
+# ==============================================
+# User Preferences: General
+# ==============================================
+echo "User Preferences: General panel"
+
+# Sidebar icon size: Small
+defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 1
+# Possible values: 1 = Small, 2 = Medium, 3 = Large
+
+# Always show scrollbars
+defaults write NSGlobalDomain AppleShowScrollBars -string "WhenScrolling"
+# Possible values: 'WhenScrolling', 'Automatic', 'Always'
+
+# Don't restore windows when quitting or re-opening apps
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+
+# ==============================================
+# User Preferences: Desktop & Screen Saver
+# ==============================================
+echo "User Preferences: Desktop & Screen Saver"
+
+# Hot corners:  bottom left = start screen saver
+defaults write com.apple.dock "wvous-bl-corner" -int 5
+defaults write com.apple.dock "wvous-bl-modifier" -int 0
+
+# ==============================================
+# User Preferences: Dock
+# ==============================================
+echo "User Preferences: Dock"
+
+# Set size of dock
+defaults write com.apple.dock tilesize -int 32
+
+# Enable magnification
+defaults write com.apple.dock magnification -bool true
+
+# Set magnification in dock
+defaults write com.apple.dock largesize -int 64
+
+# Set orientation of dock
+defaults write com.apple.dock orientation -string bottom
+
+# Show hidden applications
+defaults write com.apple.dock showhidden -bool true
+
+# Change minimize effect
+## defaults write com.apple.dock mineffect suck
+# Possible values: 'genie', 'scale', 'suck'
+
+# Animate application launch
+defaults write com.apple.dock launchanim -bool true
+
+# Show indicators for open applications
+defaults write com.apple.dock show-process-indicators -bool true
+
+# Don’t show recent applications in Dock
+defaults write com.apple.dock show-recents -bool false
+
+# ==============================================
+# User Preferences: Mission Control
+# ==============================================
+echo "User Preferences: Mission Control"
+
+# Disbale rearranging Spaces based on recent use
+defaults write com.apple.dock mru-spaces -bool false
+
+# ==============================================
+# User Preferences: Language & Region
+# ==============================================
+echo "User Preferences: Language & Region"
+
+# Set locale
+defaults write NSGlobalDomain AppleLocale -string "en_ZA"
+## defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
+## defaults write NSGlobalDomain AppleMetricUnits -bool true
+
+# ==============================================
+# User Preferences: Privacy & Security
+# ==============================================
+# echo "User Preferences: Privacy & Security"
+
+# Ask for password after 5 seconds
+# defaults write com.apple.screensaver askForPassword -int 1
+# defaults write com.apple.screensaver askForPasswordDelay -int 5
+
+# ==============================================
+# User Preferences: Keyboard
+# ==============================================
+echo "User Preferences: Keyboard"
+
+# Disable automatic capitalization
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# Disable smart dashes
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# Disable automatic period substitution
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+
+# Disable smart quotes
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# Disable auto-correct
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# ==============================================
+# User Preferences: Trackpad
+# ==============================================
+echo "User Preferences: Trackpad preferences"
+
+# Set trackpad tracking speed
+defaults write -g com.apple.trackpad.scaling 3
+
+# Enable “natural” scroll direction
+defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
+
+# Tap to click
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+
+# Tap with two fingers to emulate right click
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+
+# Enable three finger tap (look up)
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerTapGesture -int 0
+
+# Disable three finger drag
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool false
+
+# Zoom in or out
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadPinch -bool true
+
+# Smart zoom, double-tap with two fingers
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerDoubleTapGesture -bool true
+
+# Rotate
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRotate -bool true
+
+# Notification Center
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 3
+
+# Swipe between pages with two fingers
+# defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
+
+# Swipe between full-screen apps
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+
+# Enable other multi-finger gestures
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerVertSwipeGesture -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerVertSwipeGesture -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerPinchGesture -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerHorizSwipeGesture -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFingerPinchGesture -int 2
+
+# defaults write com.apple.dock showMissionControlGestureEnabled -bool true
+# defaults write com.apple.dock showAppExposeGestureEnabled -bool false
+# defaults write com.apple.dock showDesktopGestureEnabled -bool true
+# defaults write com.apple.dock showLaunchpadGestureEnabled -bool true
+
+# defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad USBMouseStopsTrackpad -bool true
+
+# ==============================================
+# User Preferences: NSGlobalDomain settings
+# ==============================================
+echo "User Preferences: NSGlobalDomain preferences"
+
+# Save to disk (not to iCloud) by default
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Expand save panel by default
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# Expand print panel by default
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# Automatically quit printer app once the print jobs complete
+## defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+
+# Displaying ASCII control characters using caret notation in standard text views
+## defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
+
+# ==============================================
+# User Preferences: Menu Bar
+# ==============================================
+echo "User Preferences: Menu Bar preferences"
+
+# Menu Bar Date Format
+defaults write com.apple.menuextra.clock "DateFormat" "EEE d MMM  HH:mm:ss"
+
+# ==============================================
+# User Preferences: App: Finder
+# ==============================================
+echo "User Preferences: Finder preferences"
+
+# Show the ~/Library directory
+## chflags nohidden "${HOME}/Library"
+
+# Don't show the ~/mac-setup directory
+## chflags hidden "${HOME}/mac-setup"
+
+# Expand the “General”, “Open with”, and “Sharing & Permissions” panes
+## defaults write com.apple.finder FXInfoPanesExpanded -dict \
+##   General -bool true \
+##   OpenWith -bool true \
+##   Privileges -bool true
+
+# Show status bar
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Show path bar
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Show tab bar
+defaults write com.apple.finder ShowTabView -bool true
+
+# Display full POSIX path as Finder window title
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+# New window points to home
+defaults write com.apple.finder NewWindowTarget -string "PfHm"
+## defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Desktop/"
+
+# Automatically open a new Finder window when a volume is mounted
+## defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
+## defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
+## defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
+
+# Finder: disable window animations and Get Info animations
+## defaults write com.apple.finder DisableAllAnimations -bool true
+
+# Show icons for hard drives, servers, and removable media on the desktop
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool false
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool false
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool false
+
+# Finder: show all filename extensions
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Finder: allow text selection in Quick Look
+defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# When performing a search, search the current folder by default
+# defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# Avoid creating .DS_Store files on network volumes
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+# Use column view
+defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
+
+# ==============================================
+# User Preferences: App: App Store
+# ==============================================
+# echo "User Preferences: App Store preferences"
+
+# Check for software updates daily, not just once per week
+## defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+
+# Enable auto updates
+## sudo softwareupdate --schedule on
+
+# ==============================================
+# User Preferences: Screen Capture
+# ==============================================
+echo "User Preferences: Screenshots preferences"
+
+# Save screenshots to the custom directory
+mkdir -p "${HOME}/Documents/screenshots"
+defaults write com.apple.screencapture location -string "${HOME}/Documents/screenshots"
+
+# Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
+defaults write com.apple.screencapture type -string "png"
+
+# Disable shadow in screenshots
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# ==============================================
+# Kill affected applications
+# ==============================================
+
+function killallApps() {
+    killall "Finder" > /dev/null 2>&1
+    killall "SystemUIServer" > /dev/null 2>&1
+    killall "Dock" > /dev/null 2>&1
+
+    appsToKill=(
+    "Dashboard"
+    "System Preferences"
+    )
+
+    for app in "${appsToKill[@]}"
+    do
+        killall "${app}" > /dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            # We just killed an app so restart it
+            open -a "${app}"
+        fi
+    done
+
+    echo "Note that some of these changes require a logout/restart to take effect."
+}
+
+printf "Restart the affected applications? (y/n): "
+read killallReply
+if [[ $killallReply =~ ^[Yy]$ ]]; then
+    killallApps
+fi
+
+exit 0
+
+# ==============================================
+# End: User Preferences
+# ==============================================
