@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+XCODE=`xcode-select --version`
+ROSETTA=`pkgutil --files com.apple.pkg.RosettaUpdateAuto`
+HOMEBREW=`brew --version`
+
+if [[ "$XCODE" != "" ]]; then
+    echo $XCODE
+    echo "Xcode installed. We are good to go!"
+else
+    echo  "No Xcode installation. Installing Xcode ..."
+    xcode-select --install
+fi
+
+if [[ "$ROSETTA" != "" ]]; then
+    echo $ROSETTA
+    echo "Rosetta installed. We are good to go!"
+else
+    echo  "No Rosetta installation. Installing Rosetta ..."
+    /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+fi
+
+if [[ "$HOMEBREW" != "" ]]; then
+    echo $HOMEBREW
+    echo "Homebrew installed. We are good to go!"
+else
+    echo  "No Homebrew installation. Installing Homebrew ..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
