@@ -60,6 +60,7 @@ brew install --cask microsoft-office
 brew install --cask microsoft-remote-desktop
 brew install --cask microsoft-teams
 brew install --cask parallels
+brew install --cask rancher
 brew install --cask postman
 brew install --cask slack
 brew install --cask sublime-text
@@ -67,7 +68,6 @@ brew install --cask telegram
 brew install --cask the-unarchiver
 brew install --cask visual-studio-code
 brew install --cask zoom
-# brew install --cask zoom-outlook-plugin
 
 # ==============================================
 # done
