@@ -1,0 +1,26 @@
+### macOS ###
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+
+### VisualStudioCode ###
+.vscode/*
+
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+
+# Folder config file
+[Dd]esktop.ini
+
+# Windows shortcuts
+*.lnk
