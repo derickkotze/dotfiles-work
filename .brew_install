@@ -31,15 +31,20 @@ brew install jo
 brew install jq
 brew install nmap
 brew install p7zip
-brew install pyenv
-brew install pyenv-virtualenv
+# brew install pyenv
+# brew install pyenv-virtualenv
+brew install rsync
 brew install screen
 brew install ssh-copy-id
+brew install tfenv
 brew install tree
 brew install unar
+brew install uv
 brew install watch
 brew install wget
 brew install xz
+brew install yt-dlp
+brew install zstd
 
 # Remove outdated version from Cellar
 brew cleanup
@@ -48,20 +53,17 @@ brew cleanup
 # macOS apps
 # ==============================================
 
+brew install --cask 1password
 brew install --cask affinity-designer
 brew install --cask box-drive
 brew install --cask citrix-workspace
-brew install --cask brave-browser
 brew install --cask google-chrome
 brew install --cask iterm2
-brew install --cask lastpass
 brew install --cask microsoft-auto-update
 brew install --cask microsoft-office
 brew install --cask microsoft-remote-desktop
 brew install --cask microsoft-teams
-brew install --cask parallels
-brew install --cask rancher
-brew install --cask postman
+brew install --cask orbstack
 brew install --cask slack
 brew install --cask sublime-text
 brew install --cask telegram
