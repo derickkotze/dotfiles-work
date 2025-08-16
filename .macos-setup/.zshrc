@@ -19,6 +19,8 @@ eval "$(direnv hook zsh)"
 # # pyenv-virtualenv configuration
 # eval "$(pyenv virtualenv-init -)"
 
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # Git configuration
 function parse_git_branch() {
     git branch 2> /dev/null | sed -n -e 's/^\* \(.*\)/\(\1\) /p'
