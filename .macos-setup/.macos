@@ -51,8 +51,8 @@ sudo scutil --set LocalHostName $1
 
 sudo /usr/sbin/systemsetup -settimezone "Africa/Johannesburg"
 sudo /usr/sbin/systemsetup -setnetworktimeserver "time.apple.com"
-sudo /usr/sbin/systemsetup -setusingnetworktime off
-# sudo defaults write /Library/Preferences/com.apple.timezone.auto Active -bool false
+sudo /usr/sbin/systemsetup -setusingnetworktime on
+sudo defaults write /Library/Preferences/com.apple.timezone.auto Active -bool false
 
 # # ==============================================
 # # System Settings: Set energy preferences
@@ -185,6 +185,18 @@ echo "User Preferences: Language & Region"
 
 # Set locale
 defaults write NSGlobalDomain AppleLocale -string "en_ZA"
+
+# Set date format to ISO 8601 (YYYY-MM-DD)
+defaults write NSGlobalDomain AppleICUDateFormatStrings -dict \
+    1 -string "y-MM-dd" \
+    2 -string "y-MM-dd" \
+    3 -string "y-MM-dd" \
+    4 -string "EEEE, y-MM-dd"
+
+# Override number format: period for decimal, comma for thousands
+defaults write NSGlobalDomain NSLocale -dict \
+    NSLocaleDecimalSeparator -string "." \
+    NSLocaleGroupingSeparator -string ","
 ## defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 ## defaults write NSGlobalDomain AppleMetricUnits -bool true
 
@@ -301,6 +313,10 @@ echo "User Preferences: Menu Bar preferences"
 
 # Menu Bar Date Format
 defaults write com.apple.menuextra.clock "DateFormat" "EEE d MMM  HH:mm:ss"
+
+# Show battery percentage in menu bar
+defaults write com.apple.controlcenter "NSStatusItem Visible Battery" -bool true
+defaults write ~/Library/Preferences/ByHost/com.apple.controlcenter.plist BatteryShowPercentage -bool true
 
 # ==============================================
 # User Preferences: App: Finder
