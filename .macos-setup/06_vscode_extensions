@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# List of VS Code extensions to install
+extensions=(
+    Compulim.indent4to2
+    DavidAnson.vscode-markdownlint
+    DotJoshJohnson.xml
+    dvirtz.parquet-viewer
+    eamodio.gitlens
+    EditorConfig.EditorConfig
+    esbenp.prettier-vscode
+    GitHub.github-vscode-theme
+    GitHub.vscode-pull-request-github
+    hashicorp.terraform
+    hediet.vscode-drawio
+    mechatroner.rainbow-csv
+    ms-python.python
+    ms-python.vscode-pylance
+    oderwat.indent-rainbow
+    redhat.vscode-yaml
+    shardulm94.trailing-spaces
+    Splunk.splunk
+    stkb.rewrap
+    yzhang.markdown-all-in-one
+)
+
+# Install each extension
+for extension in "${extensions[@]}"; do
+    echo "Installing $extension..."
+    code --install-extension "$extension"
+done
+
+echo "All specified VS Code extensions have been installed."
