@@ -32,6 +32,7 @@ brew install gzip
 
 # Useful command-line binaries
 brew install certbot
+brew install direnv
 brew install dockutil
 brew install git
 brew install jo

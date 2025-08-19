@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# List of VS Code extensions to install
+extensions=(
+    .zprofile
+    .zshrc
+    .editorconfig
+    .gitattributes
+    .gitignore_global
+)
+
+# Install each extension
+for dotfile in "${dotfiles[@]}"; do
+    echo "Copy $dotfile ..."
+    cp $dotfile ~ && source ~/$dotfile
+done

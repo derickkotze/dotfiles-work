@@ -8,10 +8,8 @@
 # System Settings (formerly System Preferences)
 #    1. Set hostname
 #    2. Date & Time
-#    3. Set energy preferences
-#    4. Application Layer Firewall
-#    5. Login window
-#    6. FileVault
+#    3. Application Layer Firewall
+#    4. Login window
 # User Preferences
 # ==============================================
 
@@ -30,7 +28,6 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until this script has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# IS_LAPTOP=`sudo /usr/sbin/system_profiler SPHardwareDataType | grep -i "Model Name" | grep -i "Book"`
 
 # ==============================================
 # Start: System Settings
@@ -49,21 +46,10 @@ sudo scutil --set LocalHostName $1
 # System Settings: Date & Time
 # ==============================================
 
-sudo /usr/sbin/systemsetup -settimezone "Africa/Johannesburg"
-sudo /usr/sbin/systemsetup -setnetworktimeserver "time.apple.com"
-sudo /usr/sbin/systemsetup -setusingnetworktime on
+sudo /usr/sbin/systemsetup -settimezone "Africa/Johannesburg" 2>&-
+sudo /usr/sbin/systemsetup -setnetworktimeserver "time.apple.com" 2>&-
+sudo /usr/sbin/systemsetup -setusingnetworktime on 2>&-
 sudo defaults write /Library/Preferences/com.apple.timezone.auto Active -bool false
-
-# # ==============================================
-# # System Settings: Set energy preferences
-# # ==============================================
-
-# if [[ "$IS_LAPTOP" != "" ]]; then
-#     sudo pmset -b sleep 15 disksleep 10 displaysleep 5 halfdim 1
-#     sudo pmset -c sleep 0 disksleep 0 displaysleep 30 halfdim 1
-# else
-#     sudo pmset sleep 0 disksleep 0 displaysleep 30 halfdim 1
-# fi
 
 # ==============================================
 # System Settings: Application Layer Firewall
@@ -77,9 +63,6 @@ sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsignedapp on
 
 # Allow signed apps
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on
-
-# Enable logging
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode on
 
 # Disable stealth mode
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on
@@ -96,14 +79,6 @@ sudo defaults write /Library/Preferences/com.apple.loginwindow RetriesUntilHint 
 
 # Hide users with UID under 500
 sudo defaults write /Library/Preferences/com.apple.loginwindow Hide500Users -bool YES
-
-# ==============================================
-# System Settings: FileVault
-# ==============================================
-
-# Destroy File Vault Key when going to standby mode
-# User will be prompted for password when coming out of standby mode
-# # sudo pmset -a destroyfvkeyonstandby 1
 
 # ==============================================
 # End: System Settings
@@ -157,10 +132,6 @@ defaults write com.apple.dock orientation -string bottom
 # Show hidden applications
 defaults write com.apple.dock showhidden -bool true
 
-# Change minimize effect
-## defaults write com.apple.dock mineffect suck
-# Possible values: 'genie', 'scale', 'suck'
-
 # Animate application launch
 defaults write com.apple.dock launchanim -bool true
 
@@ -185,20 +156,6 @@ echo "User Preferences: Language & Region"
 
 # Set locale
 defaults write NSGlobalDomain AppleLocale -string "en_ZA"
-
-# Set date format to ISO 8601 (YYYY-MM-DD)
-defaults write NSGlobalDomain AppleICUDateFormatStrings -dict \
-    1 -string "y-MM-dd" \
-    2 -string "y-MM-dd" \
-    3 -string "y-MM-dd" \
-    4 -string "EEEE, y-MM-dd"
-
-# Override number format: period for decimal, comma for thousands
-defaults write NSGlobalDomain NSLocale -dict \
-    NSLocaleDecimalSeparator -string "." \
-    NSLocaleGroupingSeparator -string ","
-## defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
-## defaults write NSGlobalDomain AppleMetricUnits -bool true
 
 # ==============================================
 # User Preferences: Privacy & Security
@@ -237,53 +194,6 @@ echo "User Preferences: Trackpad preferences"
 # Set trackpad tracking speed
 defaults write -g com.apple.trackpad.scaling 3
 
-# Enable "natural" scroll direction
-defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
-
-# Tap to click
-defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
-
-# Tap with two fingers to emulate right click
-defaults write com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
-
-# Enable three finger tap (look up)
-defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerTapGesture -int 0
-
-# Disable three finger drag
-defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool false
-
-# Zoom in or out
-defaults write com.apple.AppleMultitouchTrackpad TrackpadPinch -bool true
-
-# Smart zoom, double-tap with two fingers
-defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -bool true
-
-# Rotate
-defaults write com.apple.AppleMultitouchTrackpad TrackpadRotate -bool true
-
-# Notification Center
-defaults write com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 3
-
-# Swipe between pages with two fingers
-# defaults write NSGlobalDomain AppleEnableSwipeNavigateWithScrolls -bool true
-
-# Swipe between full-screen apps
-defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
-
-# Enable other multi-finger gestures
-defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -int 2
-defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
-defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerPinchGesture -int 2
-defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
-defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 2
-
-# defaults write com.apple.dock showMissionControlGestureEnabled -bool true
-# defaults write com.apple.dock showAppExposeGestureEnabled -bool false
-# defaults write com.apple.dock showDesktopGestureEnabled -bool true
-# defaults write com.apple.dock showLaunchpadGestureEnabled -bool true
-
-# defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad USBMouseStopsTrackpad -bool true
-
 # ==============================================
 # User Preferences: NSGlobalDomain settings
 # ==============================================
@@ -299,12 +209,6 @@ defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
 # Expand print panel by default
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
 defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
-
-# Automatically quit printer app once the print jobs complete
-## defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
-
-# Displaying ASCII control characters using caret notation in standard text views
-## defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
 
 # ==============================================
 # User Preferences: Menu Bar
@@ -323,18 +227,6 @@ defaults write ~/Library/Preferences/ByHost/com.apple.controlcenter.plist Batter
 # ==============================================
 echo "User Preferences: Finder preferences"
 
-# Show the ~/Library directory
-## chflags nohidden "${HOME}/Library"
-
-# Don't show the ~/mac-setup directory
-## chflags hidden "${HOME}/mac-setup"
-
-# Expand the "General", "Open with", and "Sharing & Permissions" panes
-## defaults write com.apple.finder FXInfoPanesExpanded -dict \
-##   General -bool true \
-##   OpenWith -bool true \
-##   Privileges -bool true
-
 # Show status bar
 defaults write com.apple.finder ShowStatusBar -bool true
 
@@ -350,14 +242,6 @@ defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 # New window points to home
 defaults write com.apple.finder NewWindowTarget -string "PfHm"
 ## defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/Desktop/"
-
-# Automatically open a new Finder window when a volume is mounted
-## defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
-## defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
-## defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
-
-# Finder: disable window animations and Get Info animations
-## defaults write com.apple.finder DisableAllAnimations -bool true
 
 # Show icons for hard drives, servers, and removable media on the desktop
 defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool false
@@ -380,17 +264,6 @@ defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
 
 # Use column view
 defaults write com.apple.finder FXPreferredViewStyle -string "clmv"
-
-# ==============================================
-# User Preferences: App: App Store
-# ==============================================
-# echo "User Preferences: App Store preferences"
-
-# Check for software updates daily, not just once per week
-## defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
-
-# Enable auto updates
-## sudo softwareupdate --schedule on
 
 # ==============================================
 # User Preferences: Screen Capture
@@ -432,20 +305,6 @@ defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
 
 # Show all processes
 defaults write com.apple.ActivityMonitor ShowCategory -int 0
-
-# ==============================================
-# User Preferences: App: Safari
-# ==============================================
-echo "User Preferences: Safari preferences"
-
-# Enable Develop menu
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-
-# Show full URL in address bar
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
-
-# Disable auto-filling passwords
-defaults write com.apple.Safari AutoFillPasswords -bool false
 
 # ==============================================
 # Kill affected applications
