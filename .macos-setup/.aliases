@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-# navigation aliases
-alias ll="ls -l"
-alias la="ls -al"

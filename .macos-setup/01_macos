@@ -28,7 +28,6 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until this script has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-
 # ==============================================
 # Start: System Settings
 # ==============================================
@@ -156,15 +155,6 @@ echo "User Preferences: Language & Region"
 
 # Set locale
 defaults write NSGlobalDomain AppleLocale -string "en_ZA"
-
-# ==============================================
-# User Preferences: Privacy & Security
-# ==============================================
-echo "User Preferences: Privacy & Security"
-
-# Ask for password after 5 seconds
-defaults write com.apple.screensaver askForPassword -int 1
-defaults write com.apple.screensaver askForPasswordDelay -int 5
 
 # ==============================================
 # User Preferences: Keyboard
